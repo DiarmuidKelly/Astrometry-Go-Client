@@ -81,7 +81,7 @@ func NewClient(config *ClientConfig) (*Client, error) {
 
 	// Set defaults
 	if config.DockerImage == "" {
-		config.DockerImage = "dm90/astrometry"
+		config.DockerImage = DefaultDockerImage
 	}
 	if config.Timeout == 0 {
 		config.Timeout = 5 * time.Minute

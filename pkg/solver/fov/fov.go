@@ -99,11 +99,11 @@ func CalculateFOV(focalLengthMM float64, sensor SensorSize) FieldOfView {
 }
 
 // CalculateFOVRange calculates the FOV range for a zoom lens.
-func CalculateFOVRange(minFocalLength, maxFocalLength float64, sensor SensorSize) (min, max FieldOfView) {
+func CalculateFOVRange(minFocalLength, maxFocalLength float64, sensor SensorSize) (minFOV, maxFOV FieldOfView) {
 	// At max focal length, FOV is smallest
-	min = CalculateFOV(maxFocalLength, sensor)
+	minFOV = CalculateFOV(maxFocalLength, sensor)
 	// At min focal length, FOV is largest
-	max = CalculateFOV(minFocalLength, sensor)
+	maxFOV = CalculateFOV(minFocalLength, sensor)
 	return
 }
 

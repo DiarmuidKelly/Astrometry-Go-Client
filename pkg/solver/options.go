@@ -4,6 +4,11 @@ package solver
 
 import "time"
 
+const (
+	// DefaultDockerImage is the default Docker image used for plate-solving
+	DefaultDockerImage = "dm90/astrometry"
+)
+
 // ClientConfig holds configuration for the Astrometry client.
 type ClientConfig struct {
 	// DockerImage specifies the Docker image to use for solving.
@@ -87,7 +92,7 @@ type SolveOptions struct {
 // DefaultClientConfig returns a ClientConfig with sensible defaults.
 func DefaultClientConfig() *ClientConfig {
 	return &ClientConfig{
-		DockerImage: "dm90/astrometry",
+		DockerImage: DefaultDockerImage,
 		Timeout:     5 * time.Minute,
 	}
 }

@@ -7,6 +7,13 @@ import (
 	"github.com/rwcarlsen/goexif/exif"
 )
 
+const (
+	// detectionSourceEXIF indicates sensor was detected from EXIF camera model
+	detectionSourceEXIF = "exif"
+	// detectionSourceDefault indicates default sensor was used
+	detectionSourceDefault = "default"
+)
+
 // ImageInfo contains camera and lens information extracted from an image.
 type ImageInfo struct {
 	Make         string  // Camera manufacturer (e.g., "Canon")
@@ -40,7 +47,11 @@ func AnalyzeImage(imagePath string) (*ImageInfo, error) {
 	if err != nil {
 		return nil, fmt.Errorf("failed to open image: %w", err)
 	}
-	defer file.Close()
+	defer func() {
+		if closeErr := file.Close(); closeErr != nil && err == nil {
+			err = fmt.Errorf("failed to close file: %w", closeErr)
+		}
+	}()
 
 	// Try to decode EXIF data
 	x, err := exif.Decode(file)
@@ -55,8 +66,8 @@ func AnalyzeImage(imagePath string) (*ImageInfo, error) {
 	}
 
 	// Extract camera make
-	if make, err := x.Get(exif.Make); err == nil {
-		if makeStr, err := make.StringVal(); err == nil {
+	if makeTag, err := x.Get(exif.Make); err == nil {
+		if makeStr, err := makeTag.StringVal(); err == nil {
 			info.Make = makeStr
 		}
 	}
@@ -102,7 +113,7 @@ func detectSensor(make, model string) (SensorSize, string) {
 	if contains(makeUpper, "CANON") {
 		for _, mapping := range canonMappings {
 			if contains(modelUpper, mapping.Pattern) {
-				return mapping.Sensor, "exif"
+				return mapping.Sensor, detectionSourceEXIF
 			}
 		}
 	}
@@ -111,7 +122,7 @@ func detectSensor(make, model string) (SensorSize, string) {
 	if contains(makeUpper, "NIKON") {
 		for _, mapping := range nikonMappings {
 			if contains(modelUpper, mapping.Pattern) {
-				return mapping.Sensor, "exif"
+				return mapping.Sensor, detectionSourceEXIF
 			}
 		}
 	}
@@ -120,7 +131,7 @@ func detectSensor(make, model string) (SensorSize, string) {
 	if contains(makeUpper, "SONY") {
 		for _, mapping := range sonyMappings {
 			if contains(modelUpper, mapping.Pattern) {
-				return mapping.Sensor, "exif"
+				return mapping.Sensor, detectionSourceEXIF
 			}
 		}
 	}
@@ -129,26 +140,26 @@ func detectSensor(make, model string) (SensorSize, string) {
 	if contains(makeUpper, "OLYMPUS") || contains(makeUpper, "OM SYSTEM") {
 		for _, mapping := range olympusMappings {
 			if contains(modelUpper, mapping.Pattern) {
-				return mapping.Sensor, "exif"
+				return mapping.Sensor, detectionSourceEXIF
 			}
 		}
 		// Default to Micro Four Thirds for Olympus/OM System
-		return MicroFourThirds, "exif"
+		return MicroFourThirds, detectionSourceEXIF
 	}
 
 	// Panasonic cameras
 	if contains(makeUpper, "PANASONIC") {
 		for _, mapping := range panasonicMappings {
 			if contains(modelUpper, mapping.Pattern) {
-				return mapping.Sensor, "exif"
+				return mapping.Sensor, detectionSourceEXIF
 			}
 		}
 		// Default to Micro Four Thirds for Panasonic Lumix
-		return MicroFourThirds, "exif"
+		return MicroFourThirds, detectionSourceEXIF
 	}
 
 	// Default to APS-C Nikon as most common sensor size
-	return APSCNikon, "default"
+	return APSCNikon, detectionSourceDefault
 }
 
 // String returns a human-readable summary of the image info.

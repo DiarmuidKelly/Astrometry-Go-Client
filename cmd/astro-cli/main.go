@@ -1,3 +1,4 @@
+// Package main provides a command-line interface for astrometric plate-solving.
 package main
 
 import (
