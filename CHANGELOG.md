@@ -7,6 +7,18 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Added
+- Docker setup documentation with execution mode comparison
+- docker-compose.yml for development convenience
+- .env.example for configuration template
+- Wikipedia-verified camera sensor detection (185+ models: Canon, Nikon, Sony, Olympus, Panasonic)
+- FOV package with automatic sensor detection from EXIF data
+- Test coverage for FOV package (85.4%)
+
+### Fixed
+- Fixed .gitignore preventing cmd/astro-cli source from being committed
+- Addressed linter warnings (built-in shadowing, error handling, constants)
+
 ## [0.1.0] - 2025-12-14
 
 ### Added
