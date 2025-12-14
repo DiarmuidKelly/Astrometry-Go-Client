@@ -66,22 +66,22 @@ func AnalyzeImage(imagePath string) (*ImageInfo, error) {
 	}
 
 	// Extract camera make
-	if makeTag, err := x.Get(exif.Make); err == nil {
-		if makeStr, err := makeTag.StringVal(); err == nil {
+	if makeTag, makeErr := x.Get(exif.Make); makeErr == nil {
+		if makeStr, strErr := makeTag.StringVal(); strErr == nil {
 			info.Make = makeStr
 		}
 	}
 
 	// Extract camera model
-	if model, err := x.Get(exif.Model); err == nil {
-		if modelStr, err := model.StringVal(); err == nil {
+	if model, modelErr := x.Get(exif.Model); modelErr == nil {
+		if modelStr, strErr := model.StringVal(); strErr == nil {
 			info.Model = modelStr
 		}
 	}
 
 	// Extract focal length
-	if focalTag, err := x.Get(exif.FocalLength); err == nil {
-		if num, denom, err := focalTag.Rat2(0); err == nil && denom != 0 {
+	if focalTag, focalErr := x.Get(exif.FocalLength); focalErr == nil {
+		if num, denom, ratErr := focalTag.Rat2(0); ratErr == nil && denom != 0 {
 			info.FocalLength = float64(num) / float64(denom)
 		}
 	}
@@ -104,9 +104,9 @@ func AnalyzeImage(imagePath string) (*ImageInfo, error) {
 
 // detectSensor attempts to identify the sensor size based on camera make and model.
 // Camera mappings are defined in constants.go and should be reviewed for accuracy.
-func detectSensor(make, model string) (SensorSize, string) {
+func detectSensor(cameraMake, model string) (SensorSize, string) {
 	// Normalize strings for comparison
-	makeUpper := toUpper(make)
+	makeUpper := toUpper(cameraMake)
 	modelUpper := toUpper(model)
 
 	// Canon cameras
