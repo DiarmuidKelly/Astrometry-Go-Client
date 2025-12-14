@@ -5,7 +5,7 @@
 ![Go Version](https://img.shields.io/github/go-mod/go-version/DiarmuidKelly/Astrometry-Go-Client)
 [![Go Report Card](https://goreportcard.com/badge/github.com/DiarmuidKelly/Astrometry-Go-Client)](https://goreportcard.com/report/github.com/DiarmuidKelly/Astrometry-Go-Client)
 
-**Offline astrometric plate-solving for Go** - Solve astronomical images locally without internet access using the [dm90/astrometry](https://hub.docker.com/r/dm90/astrometry) Docker container. Complete privacy and control over your data with no dependency on external services.
+**Offline astrometric plate-solving for Go** - Solve astronomical images locally without internet access using the [astrometry-dockerised-solver](https://github.com/DiarmuidKelly/astrometry-dockerised-solver) Docker container. Complete privacy and control over your data with no dependency on external services.
 
 ## Features
 
@@ -39,7 +39,7 @@ Unlike cloud-based plate-solving services, this library runs entirely on your lo
 
 ### Required
 - **Go 1.21+**
-- **Docker** with the `dm90/astrometry` image pulled (one-time download)
+- **Docker** with the `diarmuidk/astrometry-dockerised-solver` image pulled (one-time download)
 - **Astrometry.net index files** downloaded to a local directory (one-time download)
 
 ### Quick Setup
@@ -138,7 +138,7 @@ Index files contain pre-computed star patterns (called "quads") at specific angu
 
 ## Docker Setup
 
-This library requires the `dm90/astrometry` Docker container to perform plate-solving. You have several options for running the dependency:
+This library uses the `diarmuidk/astrometry-dockerised-solver` Docker container to perform plate-solving. You have several options for running the dependency:
 
 ### Docker Execution Modes
 
@@ -159,13 +159,19 @@ The library supports two Docker execution modes:
 **Setup**: Pull the image, then use the library - that's it!
 
 ```bash
-docker pull dm90/astrometry:latest
+# Pull from DockerHub (recommended)
+docker pull diarmuidk/astrometry-dockerised-solver:latest
+
+# Or from GitHub Container Registry (GHCR)
+docker pull ghcr.io/diarmuidkelly/astrometry-dockerised-solver:latest
 ```
 
 **Client configuration**:
 ```go
 config := &solver.ClientConfig{
     IndexPath: "/path/to/astrometry-data",  // Path to your index files
+    // DockerImage defaults to ghcr.io/diarmuidkelly/astrometry-dockerised-solver:latest
+    // To use dm90/astrometry instead: DockerImage: "dm90/astrometry"
 }
 client, err := solver.NewClient(config)
 ```
@@ -202,8 +208,13 @@ docker run -d \
   --name astrometry-solver \
   -v ~/astrometry-data:/usr/local/astrometry/data:ro \
   -v /tmp/astrometry-shared:/shared-data \
-  dm90/astrometry:latest \
+  diarmuidk/astrometry-dockerised-solver:latest \
   tail -f /dev/null
+```
+
+**Alternative:** You can also use the original `dm90/astrometry` image if you prefer:
+```bash
+docker pull dm90/astrometry:latest
 ```
 
 **Client configuration**:
@@ -333,7 +344,8 @@ Output (JSON):
 
 ```go
 type ClientConfig struct {
-    DockerImage   string        // Default: "dm90/astrometry"
+    DockerImage   string        // Default: "ghcr.io/diarmuidkelly/astrometry-dockerised-solver:latest"
+                                 // Also compatible with: "dm90/astrometry"
     IndexPath     string        // Required: path to index files
     TempDir       string        // Optional: temp directory for processing
     Timeout       time.Duration // Default: 5 minutes
@@ -480,13 +492,15 @@ This project is licensed under the GNU General Public License v3.0 - see the [LI
 ## Links
 
 - [Astrometry API Server](https://github.com/DiarmuidKelly/Astrometry-API-Server) - REST API server for this library
+- [Astrometry Dockerised Solver](https://github.com/DiarmuidKelly/astrometry-dockerised-solver) - Maintained solver-only Docker image
 - [Changelog](CHANGELOG.md)
 - [Contributing Guide](CONTRIBUTING.md)
 - [Issues](https://github.com/DiarmuidKelly/Astrometry-Go-Client/issues)
 - [Astrometry.net](http://astrometry.net/)
-- [dm90/astrometry Docker Image](https://hub.docker.com/r/dm90/astrometry)
+- [dam90/astrometry](https://github.com/dam90/astrometry) - Alternative Docker image with web UI
 
 ## Acknowledgments
 
-- [Astrometry.net](http://astrometry.net/) project for the plate-solving engine
-- [dm90/astrometry](https://hub.docker.com/r/dm90/astrometry) for the containerized version
+- [Astrometry.net](https://github.com/dstndstn/astrometry.net) - The plate-solving engine
+- [dam90/astrometry](https://github.com/dam90/astrometry) - Original containerized version with web UI
+- [astrometry-dockerised-solver](https://github.com/DiarmuidKelly/astrometry-dockerised-solver) - Maintained solver-only image
