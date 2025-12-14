@@ -66,7 +66,7 @@ func ParseWCSFile(wcsPath string) (*Result, error) {
 		return nil, fmt.Errorf("failed to open WCS file: %w", err)
 	}
 	defer func() {
-		_ = file.Close()
+		_ = file.Close() //nolint:errcheck // Read-only file, close error not critical
 	}()
 
 	result := &Result{

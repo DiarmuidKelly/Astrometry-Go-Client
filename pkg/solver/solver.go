@@ -122,8 +122,8 @@ func (c *Client) Solve(ctx context.Context, imagePath string, opts *SolveOptions
 	}
 	if !opts.KeepTempFiles {
 		defer func() {
-			if err := os.RemoveAll(tempDir); err != nil {
-				log.Printf("warning: failed to remove temp directory: %v", err)
+			if removeErr := os.RemoveAll(tempDir); removeErr != nil {
+				log.Printf("warning: failed to remove temp directory: %v", removeErr)
 			}
 		}()
 	} else {
@@ -210,12 +210,12 @@ func (c *Client) SolveBytes(ctx context.Context, data []byte, format string, opt
 		return nil, fmt.Errorf("failed to create temp file: %w", err)
 	}
 	defer func() {
-		_ = os.Remove(tempFile.Name())
+		_ = os.Remove(tempFile.Name()) //nolint:errcheck // Cleanup operation, error not critical
 	}()
 
 	// Write data
 	if _, err := tempFile.Write(data); err != nil {
-		_ = tempFile.Close()
+		_ = tempFile.Close() //nolint:errcheck // Best effort cleanup on error path
 		return nil, fmt.Errorf("failed to write image data: %w", err)
 	}
 	if err := tempFile.Close(); err != nil {
