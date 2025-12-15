@@ -90,19 +90,8 @@ jobs:
           docker pull ghcr.io/diarmuidkelly/astrometry-dockerised-solver:latest
           docker pull dm90/astrometry:latest
 
-      - name: Download sample astrometry indexes
-        run: |
-          mkdir -p astrometry-data
-          cd astrometry-data
-          # Download a few small indexes for testing (covering common FOV ranges)
-          wget -q http://data.astrometry.net/4100/index-4110.fits
-          wget -q http://data.astrometry.net/4100/index-4111.fits
-          cd ..
-
       - name: Run integration tests
-        env:
-          ASTROMETRY_INDEX_PATH: ${{ github.workspace }}/astrometry-data
-        run: go test -v -tags=integration -timeout 10m ./pkg/solver/...
+        run: make test-integration
 
   build:
     name: Build

@@ -1,4 +1,4 @@
-.PHONY: all build build-cli install test test-coverage test-integration test-all lint lint-fix clean help
+.PHONY: all build build-cli install test test-coverage test-integration test-integration-setup test-all lint lint-fix clean clean-indexes help
 
 # Variables
 BINARY_NAME=astro-cli
@@ -11,6 +11,7 @@ VERSION=$(shell cat VERSION)
 BUILD_DIR=bin
 PKG=./pkg/...
 CMD=./cmd/...
+INDEX_DIR=astrometry-data
 
 # Build flags
 LDFLAGS=-ldflags "-X main.version=$(VERSION)"
@@ -38,9 +39,33 @@ test-coverage: ## Run tests with coverage
 	$(GO) tool cover -html=coverage.out -o coverage.html
 	@echo "Coverage report: coverage.html"
 
-test-integration: ## Run integration tests (requires Docker)
+test-integration-setup: ## Download index files for integration tests
+	@echo "Setting up integration test data..."
+	@mkdir -p $(INDEX_DIR)
+	@echo "Downloading astrometry index files for M42 test image (6.09° FOV)..."
+	@echo "  - index-4109.fits (4.20° - 5.60°, 50 MB)"
+	@echo "  - index-4108.fits (5.60° - 8.00°, 95 MB)"
+	@echo "Total download: 145 MB"
+	@cd $(INDEX_DIR) && \
+		if [ ! -f index-4109.fits ]; then \
+			echo "Downloading index-4109.fits..." && \
+			wget -q --show-progress http://data.astrometry.net/4100/index-4109.fits; \
+		else \
+			echo "index-4109.fits already exists"; \
+		fi
+	@cd $(INDEX_DIR) && \
+		if [ ! -f index-4108.fits ]; then \
+			echo "Downloading index-4108.fits..." && \
+			wget -q --show-progress http://data.astrometry.net/4100/index-4108.fits; \
+		else \
+			echo "index-4108.fits already exists"; \
+		fi
+	@echo "Index files ready:"
+	@ls -lh $(INDEX_DIR)/
+
+test-integration: test-integration-setup ## Run integration tests (requires Docker and index files)
 	@echo "Running integration tests..."
-	$(GOTEST) -v -race -tags=integration $(PKG)
+	ASTROMETRY_INDEX_PATH=$(INDEX_DIR) $(GOTEST) -v -race -tags=integration -timeout 10m $(PKG)
 
 test-all: test test-integration ## Run all tests
 
@@ -77,6 +102,11 @@ clean: ## Clean build artifacts
 	rm -f coverage.out coverage.html
 	rm -f $(BINARY_NAME)
 	$(GO) clean
+
+clean-indexes: ## Remove downloaded index files
+	@echo "Removing index files..."
+	rm -rf $(INDEX_DIR)
+	@echo "Index files removed. Run 'make test-integration-setup' to re-download."
 
 tidy: ## Tidy go modules
 	@echo "Tidying go modules..."

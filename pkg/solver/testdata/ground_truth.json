@@ -1,0 +1,36 @@
+{
+  "m42-orion.jpg": {
+    "description": "Orion Nebula (M42) region",
+    "source": "astrometry.net solution from wcs.fits",
+    "camera": {
+      "lens_mm": 200,
+      "mount": "Canon EF",
+      "sensor": "APS-C",
+      "crop_factor": 1.6,
+      "effective_focal_length_mm": 320,
+      "notes": "EF lens on APS-C body via adapter"
+    },
+    "solution": {
+      "ra": 83.820287,
+      "dec": -5.679779,
+      "pixel_scale_arcsec_per_pixel": 3.66,
+      "rotation_degrees": 0,
+      "field_width_degrees": 6.1028,
+      "field_height_degrees": 4.0685,
+      "image_width_pixels": 6000,
+      "image_height_pixels": 4000
+    },
+    "tolerance": {
+      "position_arcsec": 10.0,
+      "pixel_scale_percent": 5.0,
+      "rotation_degrees": 2.0,
+      "field_size_percent": 5.0
+    },
+    "notes": [
+      "Tolerances account for different solver implementations",
+      "Position tolerance: 10 arcsec allows for minor WCS differences",
+      "Pixel scale tolerance: 5% allows for rounding differences",
+      "All 3 Docker images should produce results within tolerance of each other"
+    ]
+  }
+}

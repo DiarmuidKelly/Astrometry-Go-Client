@@ -38,6 +38,7 @@ Unlike cloud-based plate-solving services, this library runs entirely on your lo
 **Note:** Internet is only required once during initial setup to download the Docker image and index files. After setup, the solver runs 100% offline.
 
 ### Required
+
 - **Go 1.21+**
 - **Docker** with the `diarmuidk/astrometry-dockerised-solver` image pulled (one-time download)
 - **Astrometry.net index files** downloaded to a local directory (one-time download)
@@ -60,33 +61,41 @@ Astrometry.net requires index files that match your camera's field of view (FOV)
 #### Choosing the Right Index Files
 
 First, calculate your FOV:
+
+```
+FOV = 2 × arctan(sensor_width / (2 × focal_length))
+FOV ≈ sensor_width / focal_length   (in radians)
+FOV ≈ (sensor_width / focal_length) × 57.3   (in degrees)
+```
+
 ```
 FOV (degrees) = (sensor_width_mm / focal_length_mm) × 57.3
 ```
 
 Then download 2-3 indexes that bracket your FOV:
 
-| Index File | Field Width | Size | Use Case | Download |
-|------------|-------------|------|----------|----------|
-| index-4119 | 0.1° - 0.2° | 144 KB | Planetary imaging, very long focal length | [Download](http://data.astrometry.net/4100/index-4119.fits) |
-| index-4118 | 0.2° - 0.28° | 187 KB | Long focal length telescopes | [Download](http://data.astrometry.net/4100/index-4118.fits) |
-| index-4117 | 0.28° - 0.4° | 248 KB | | [Download](http://data.astrometry.net/4100/index-4117.fits) |
-| index-4116 | 0.4° - 0.56° | 409 KB | | [Download](http://data.astrometry.net/4100/index-4116.fits) |
-| index-4115 | 0.56° - 0.8° | 740 KB | Medium-long focal length | [Download](http://data.astrometry.net/4100/index-4115.fits) |
-| index-4114 | 0.8° - 1.1° | 1.4 MB | | [Download](http://data.astrometry.net/4100/index-4114.fits) |
-| index-4113 | 1.1° - 1.6° | 2.7 MB | | [Download](http://data.astrometry.net/4100/index-4113.fits) |
-| index-4112 | 1.6° - 2.2° | 5.3 MB | **DSLR + telephoto (common)** | [Download](http://data.astrometry.net/4100/index-4112.fits) |
-| index-4111 | 2.2° - 3.0° | 10 MB | **DSLR + normal lens (common)** | [Download](http://data.astrometry.net/4100/index-4111.fits) |
-| index-4110 | 3.0° - 4.2° | 25 MB | **Wide angle DSLR (common)** | [Download](http://data.astrometry.net/4100/index-4110.fits) |
-| index-4109 | 4.2° - 5.6° | 50 MB | Very wide angle | [Download](http://data.astrometry.net/4100/index-4109.fits) |
-| index-4108 | 5.6° - 8.0° | 95 MB | Ultra-wide, fisheye | [Download](http://data.astrometry.net/4100/index-4108.fits) |
-| index-4107 | 8.0° - 11.0° | 165 MB | All-sky cameras | [Download](http://data.astrometry.net/4100/index-4107.fits) |
+| Index File | Field Width  | Size   | Use Case                                  | Download                                                    |
+| ---------- | ------------ | ------ | ----------------------------------------- | ----------------------------------------------------------- |
+| index-4119 | 0.1° - 0.2°  | 144 KB | Planetary imaging, very long focal length | [Download](http://data.astrometry.net/4100/index-4119.fits) |
+| index-4118 | 0.2° - 0.28° | 187 KB | Long focal length telescopes              | [Download](http://data.astrometry.net/4100/index-4118.fits) |
+| index-4117 | 0.28° - 0.4° | 248 KB |                                           | [Download](http://data.astrometry.net/4100/index-4117.fits) |
+| index-4116 | 0.4° - 0.56° | 409 KB |                                           | [Download](http://data.astrometry.net/4100/index-4116.fits) |
+| index-4115 | 0.56° - 0.8° | 740 KB | Medium-long focal length                  | [Download](http://data.astrometry.net/4100/index-4115.fits) |
+| index-4114 | 0.8° - 1.1°  | 1.4 MB |                                           | [Download](http://data.astrometry.net/4100/index-4114.fits) |
+| index-4113 | 1.1° - 1.6°  | 2.7 MB |                                           | [Download](http://data.astrometry.net/4100/index-4113.fits) |
+| index-4112 | 1.6° - 2.2°  | 5.3 MB | **DSLR + telephoto (common)**             | [Download](http://data.astrometry.net/4100/index-4112.fits) |
+| index-4111 | 2.2° - 3.0°  | 10 MB  | **DSLR + normal lens (common)**           | [Download](http://data.astrometry.net/4100/index-4111.fits) |
+| index-4110 | 3.0° - 4.2°  | 25 MB  | **Wide angle DSLR (common)**              | [Download](http://data.astrometry.net/4100/index-4110.fits) |
+| index-4109 | 4.2° - 5.6°  | 50 MB  | Very wide angle                           | [Download](http://data.astrometry.net/4100/index-4109.fits) |
+| index-4108 | 5.6° - 8.0°  | 95 MB  | Ultra-wide, fisheye                       | [Download](http://data.astrometry.net/4100/index-4108.fits) |
+| index-4107 | 8.0° - 11.0° | 165 MB | All-sky cameras                           | [Download](http://data.astrometry.net/4100/index-4107.fits) |
 
 **Total size of all indexes:** ~350 MB
 
 #### Example Setups
 
 **DSLR Astrophotography (APS-C sensor, 24mm wide):**
+
 ```bash
 mkdir -p ~/astrometry-data && cd ~/astrometry-data
 # 200mm lens: ~7° FOV
@@ -99,6 +108,7 @@ wget http://data.astrometry.net/4100/index-4111.fits
 ```
 
 **Telescope (1000mm focal length, APS-C sensor):**
+
 ```bash
 mkdir -p ~/astrometry-data && cd ~/astrometry-data
 # ~1.4° FOV
@@ -107,6 +117,7 @@ wget http://data.astrometry.net/4100/index-4114.fits
 ```
 
 **Quick Solver (50mm-300mm lenses - recommended default):**
+
 ```bash
 mkdir -p ~/astrometry-data && cd ~/astrometry-data
 # Download 1.1° - 4.2° range (~43 MB total)
@@ -125,12 +136,13 @@ Index files contain pre-computed star patterns (called "quads") at specific angu
 
 **What happens with mismatched indexes:**
 
-| Scenario | Result | Why |
-|----------|--------|-----|
+| Scenario                                    | Result                    | Why                                                                                                                                |
+| ------------------------------------------- | ------------------------- | ---------------------------------------------------------------------------------------------------------------------------------- |
 | **Narrow image (0.5°) + Wide index (6-8°)** | ❌ **Guaranteed failure** | Star patterns in the index span 6-8°. Your 0.5° image physically cannot contain patterns that large - they don't fit in the frame. |
-| **Wide image (8°) + Narrow index (0.5°)** | ⚠️ **Likely failure** | Your wide image does contain small sub-regions with narrow patterns, but matching is unreliable, very slow, and usually fails. |
+| **Wide image (8°) + Narrow index (0.5°)**   | ⚠️ **Likely failure**     | Your wide image does contain small sub-regions with narrow patterns, but matching is unreliable, very slow, and usually fails.     |
 
 **The critical rule:**
+
 - **Index scale larger than your FOV → guaranteed failure** (patterns don't fit in your image)
 - **Index scale smaller than your FOV → likely failure** (unreliable matching of sub-regions)
 
@@ -149,10 +161,12 @@ The library supports two Docker execution modes:
 **How it works**: The library spawns a new Docker container for each solve operation, then removes it.
 
 **Pros**:
+
 - Simple setup - no container management required
 - Clean isolation per solve
 
 **Cons**:
+
 - Slower for multiple solves (~1-2s container startup overhead per solve)
 - More Docker overhead
 
@@ -167,6 +181,7 @@ docker pull ghcr.io/diarmuidkelly/astrometry-dockerised-solver:latest
 ```
 
 **Client configuration**:
+
 ```go
 config := &solver.ClientConfig{
     IndexPath: "/path/to/astrometry-data",  // Path to your index files
@@ -181,10 +196,12 @@ client, err := solver.NewClient(config)
 **How it works**: Uses a long-running Docker container and executes solve commands via `docker exec`.
 
 **Pros**:
+
 - **Faster**: No container startup overhead (typically 1-2s faster per solve)
 - Ideal for development, testing, or batch processing
 
 **Cons**:
+
 - Requires manual container management
 
 **Setup Option A: Using Docker Compose (Recommended)**
@@ -213,11 +230,13 @@ docker run -d \
 ```
 
 **Alternative:** You can also use the original `dm90/astrometry` image if you prefer:
+
 ```bash
 docker pull dm90/astrometry:latest
 ```
 
 **Client configuration**:
+
 ```go
 config := &solver.ClientConfig{
     IndexPath:     "/path/to/astrometry-data",
@@ -229,17 +248,18 @@ client, err := solver.NewClient(config)
 
 ### Performance Comparison
 
-| Operation | Docker Run Mode | Docker Exec Mode | Difference |
-|-----------|-----------------|------------------|------------|
-| First solve | ~15s | ~13s | ~2s faster |
-| Subsequent solves (each) | ~15s | ~13s | ~2s faster |
-| Setup overhead | None | Start container once | One-time |
+| Operation                | Docker Run Mode | Docker Exec Mode     | Difference |
+| ------------------------ | --------------- | -------------------- | ---------- |
+| First solve              | ~15s            | ~13s                 | ~2s faster |
+| Subsequent solves (each) | ~15s            | ~13s                 | ~2s faster |
+| Setup overhead           | None            | Start container once | One-time   |
 
 **Recommendation**: Use **docker exec mode** for development/testing. Either mode works well for production depending on your orchestration setup.
 
 ### Full Stack Setup
 
 For a complete REST API server with web interface, see the [Astrometry API Server](https://github.com/DiarmuidKelly/Astrometry-API-Server) project. It includes:
+
 - docker-compose orchestration for both the API server and solver
 - RESTful HTTP API
 - Swagger documentation
@@ -478,6 +498,7 @@ go test -tags=integration ./...
 Contributions welcome! See [CONTRIBUTING.md](CONTRIBUTING.md) for workflow details.
 
 **Quick Start:**
+
 1. Fork the repository
 2. Create a feature branch (`git checkout -b feat/my-feature`)
 3. Make your changes with conventional commits
