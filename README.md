@@ -20,7 +20,7 @@
 - Context-aware with timeout support
 - Comprehensive error handling
 - CLI tool for quick command-line solving
-- Full test coverage
+- Full test coverage with integration tests validating both Docker implementations ([diarmuidk/astrometry-dockerised-solver](https://github.com/DiarmuidKelly/astrometry-dockerised-solver) and [dm90/astrometry](https://github.com/dam90/astrometry))
 
 ## Why Offline?
 
@@ -74,21 +74,21 @@ FOV (degrees) = (sensor_width_mm / focal_length_mm) × 57.3
 
 Then download 2-3 indexes that bracket your FOV:
 
-| Index File | Field Width  | Size   | Use Case                                  | Download                                                    |
-| ---------- | ------------ | ------ | ----------------------------------------- | ----------------------------------------------------------- |
-| index-4119 | 0.1° - 0.2°  | 144 KB | Planetary imaging, very long focal length | [Download](http://data.astrometry.net/4100/index-4119.fits) |
-| index-4118 | 0.2° - 0.28° | 187 KB | Long focal length telescopes              | [Download](http://data.astrometry.net/4100/index-4118.fits) |
-| index-4117 | 0.28° - 0.4° | 248 KB |                                           | [Download](http://data.astrometry.net/4100/index-4117.fits) |
-| index-4116 | 0.4° - 0.56° | 409 KB |                                           | [Download](http://data.astrometry.net/4100/index-4116.fits) |
-| index-4115 | 0.56° - 0.8° | 740 KB | Medium-long focal length                  | [Download](http://data.astrometry.net/4100/index-4115.fits) |
-| index-4114 | 0.8° - 1.1°  | 1.4 MB |                                           | [Download](http://data.astrometry.net/4100/index-4114.fits) |
-| index-4113 | 1.1° - 1.6°  | 2.7 MB |                                           | [Download](http://data.astrometry.net/4100/index-4113.fits) |
-| index-4112 | 1.6° - 2.2°  | 5.3 MB | **DSLR + telephoto (common)**             | [Download](http://data.astrometry.net/4100/index-4112.fits) |
-| index-4111 | 2.2° - 3.0°  | 10 MB  | **DSLR + normal lens (common)**           | [Download](http://data.astrometry.net/4100/index-4111.fits) |
-| index-4110 | 3.0° - 4.2°  | 25 MB  | **Wide angle DSLR (common)**              | [Download](http://data.astrometry.net/4100/index-4110.fits) |
-| index-4109 | 4.2° - 5.6°  | 50 MB  | Very wide angle                           | [Download](http://data.astrometry.net/4100/index-4109.fits) |
-| index-4108 | 5.6° - 8.0°  | 95 MB  | Ultra-wide, fisheye                       | [Download](http://data.astrometry.net/4100/index-4108.fits) |
-| index-4107 | 8.0° - 11.0° | 165 MB | All-sky cameras                           | [Download](http://data.astrometry.net/4100/index-4107.fits) |
+| Index File | Field Width  | Size   | Full Frame (36mm) | APS-C Canon (22.3mm, 1.6x) | Download                                                    |
+| ---------- | ------------ | ------ | ----------------- | -------------------------- | ----------------------------------------------------------- |
+| index-4119 | 0.1° - 0.2°  | 144 KB | 10,000-20,000mm   | 6,400-12,800mm             | [Download](http://data.astrometry.net/4100/index-4119.fits) |
+| index-4118 | 0.2° - 0.28° | 187 KB | 7,300-10,000mm    | 4,500-6,400mm              | [Download](http://data.astrometry.net/4100/index-4118.fits) |
+| index-4117 | 0.28° - 0.4° | 248 KB | 5,100-7,300mm     | 3,200-4,500mm              | [Download](http://data.astrometry.net/4100/index-4117.fits) |
+| index-4116 | 0.4° - 0.56° | 409 KB | 3,600-5,100mm     | 2,300-3,200mm              | [Download](http://data.astrometry.net/4100/index-4116.fits) |
+| index-4115 | 0.56° - 0.8° | 740 KB | 2,500-3,600mm     | 1,600-2,300mm              | [Download](http://data.astrometry.net/4100/index-4115.fits) |
+| index-4114 | 0.8° - 1.1°  | 1.4 MB | 1,800-2,500mm     | 1,200-1,600mm              | [Download](http://data.astrometry.net/4100/index-4114.fits) |
+| index-4113 | 1.1° - 1.6°  | 2.7 MB | 1,300-1,800mm     | 800-1,200mm                | [Download](http://data.astrometry.net/4100/index-4113.fits) |
+| index-4112 | 1.6° - 2.2°  | 5.3 MB | 900-1,300mm       | 600-800mm                  | [Download](http://data.astrometry.net/4100/index-4112.fits) |
+| index-4111 | 2.2° - 3.0°  | 10 MB  | 700-900mm         | 400-600mm                  | [Download](http://data.astrometry.net/4100/index-4111.fits) |
+| index-4110 | 3.0° - 4.2°  | 25 MB  | **500-700mm**     | **300-400mm**              | [Download](http://data.astrometry.net/4100/index-4110.fits) |
+| index-4109 | 4.2° - 5.6°  | 50 MB  | **350-500mm**     | **220-300mm**              | [Download](http://data.astrometry.net/4100/index-4109.fits) |
+| index-4108 | 5.6° - 8.0°  | 95 MB  | **250-350mm**     | **160-220mm**              | [Download](http://data.astrometry.net/4100/index-4108.fits) |
+| index-4107 | 8.0° - 11.0° | 165 MB | **180-250mm**     | **110-160mm**              | [Download](http://data.astrometry.net/4100/index-4107.fits) |
 
 **Total size of all indexes:** ~350 MB
 
