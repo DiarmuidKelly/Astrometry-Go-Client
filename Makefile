@@ -42,30 +42,29 @@ test-coverage: ## Run tests with coverage
 test-integration-setup: ## Download index files for integration tests
 	@echo "Setting up integration test data..."
 	@mkdir -p $(INDEX_DIR)
-	@echo "Downloading astrometry index files for M42 test image (6.09° FOV)..."
-	@echo "  - index-4109.fits (4.20° - 5.60°, 50 MB)"
-	@echo "  - index-4108.fits (5.60° - 8.00°, 95 MB)"
-	@echo "Total download: 145 MB"
+	@echo "Downloading astrometry index file for M42 test image (~6.6° FOV)..."
+	@echo "  - index-4110.fits (3.00° - 4.20°, 24 MB)"
+	@echo "Total download: 24 MB"
 	@cd $(INDEX_DIR) && \
-		if [ ! -f index-4109.fits ]; then \
-			echo "Downloading index-4109.fits..." && \
-			wget -q --show-progress http://data.astrometry.net/4100/index-4109.fits; \
+		if [ ! -f index-4110.fits ]; then \
+			echo "Downloading index-4110.fits..." && \
+			wget -q --show-progress http://data.astrometry.net/4100/index-4110.fits; \
 		else \
-			echo "index-4109.fits already exists"; \
+			echo "index-4110.fits already exists"; \
 		fi
-	@cd $(INDEX_DIR) && \
-		if [ ! -f index-4108.fits ]; then \
-			echo "Downloading index-4108.fits..." && \
-			wget -q --show-progress http://data.astrometry.net/4100/index-4108.fits; \
-		else \
-			echo "index-4108.fits already exists"; \
-		fi
-	@echo "Index files ready:"
-	@ls -lh $(INDEX_DIR)/
+	@echo "Index file ready:"
+	@ls -lh $(INDEX_DIR)/index-4110.fits
+	@echo "Converting test image to standard JPEG..."
+	@if [ ! -f images/IMG_2820-converted.jpg ]; then \
+		convert images/IMG_2820.JPG -quality 100 images/IMG_2820-converted.jpg && \
+		echo "Created IMG_2820-converted.jpg (standard JPEG from MPO)"; \
+	else \
+		echo "IMG_2820-converted.jpg already exists"; \
+	fi
 
 test-integration: test-integration-setup ## Run integration tests (requires Docker and index files)
 	@echo "Running integration tests..."
-	ASTROMETRY_INDEX_PATH=$(INDEX_DIR) $(GOTEST) -v -race -tags=integration -timeout 10m $(PKG)
+	ASTROMETRY_INDEX_PATH=$(PWD)/$(INDEX_DIR) $(GOTEST) -v -race -cover -tags=integration -timeout 10m $(PKG)
 
 test-all: test test-integration ## Run all tests
 

@@ -142,8 +142,8 @@ func TestM42WithGroundTruth(t *testing.T) {
 	}
 
 	// Load test image and ground truth
-	testImageFilename := "m42-orion.jpg"
-	testImagePath := filepath.Join("testdata", testImageFilename)
+	testImageFilename := "IMG_2820.JPG"
+	testImagePath := filepath.Join("../../images", testImageFilename)
 
 	if _, err := os.Stat(testImagePath); os.IsNotExist(err) {
 		t.Fatalf("Test image not found: %s", testImagePath)
@@ -153,12 +153,12 @@ func TestM42WithGroundTruth(t *testing.T) {
 	t.Logf("Testing with: %s", gt.Description)
 	t.Logf("Ground truth source: %s", gt.Source)
 
-	// Test all 3 Docker images
+	// Test all Docker images
 	images := []struct {
 		name  string
 		image string
 	}{
-		{"DockerHub-Test", "diarmuidk/astrometry-dockerised-solver:test"},
+		{"Latest", "diarmuidk/astrometry-dockerised-solver:latest"},
 		{"Legacy", "dm90/astrometry:latest"},
 	}
 
@@ -184,11 +184,11 @@ func TestM42WithGroundTruth(t *testing.T) {
 				t.Fatalf("Failed to create client: %v", err)
 			}
 
-			// Configure solve options based on ground truth
+			// Configure solve options - use reasonable scale range
 			opts := DefaultSolveOptions()
-			opts.ScaleLow = gt.Solution.PixelScaleArcsecPerPixel * 0.8
-			opts.ScaleHigh = gt.Solution.PixelScaleArcsecPerPixel * 1.2
-			opts.ScaleUnits = "arcsecperpix"
+			opts.ScaleLow = 1.0
+			opts.ScaleHigh = 180.0
+			opts.ScaleUnits = "degwidth"
 			opts.DownsampleFactor = 2
 
 			// Solve
@@ -251,4 +251,65 @@ func TestM42WithGroundTruth(t *testing.T) {
 			}
 		})
 	}
+}
+
+// TestConvertedJPEGWithGroundTruth tests converted standard JPEG against same ground truth
+func TestConvertedJPEGWithGroundTruth(t *testing.T) {
+	if !isDockerAvailable(t) {
+		t.Skip("Docker is not available")
+	}
+
+	// Get index path
+	indexPath := os.Getenv("ASTROMETRY_INDEX_PATH")
+	if indexPath == "" {
+		indexPath = filepath.Join(os.Getenv("HOME"), "astrometry-data")
+	}
+
+	if _, err := os.Stat(indexPath); os.IsNotExist(err) {
+		t.Skipf("Index path does not exist: %s. Set ASTROMETRY_INDEX_PATH or download indexes.", indexPath)
+	}
+
+	// Test converted JPEG file
+	convertedFilename := "IMG_2820-converted.jpg"
+	convertedPath := filepath.Join("../../images", convertedFilename)
+
+	if _, err := os.Stat(convertedPath); os.IsNotExist(err) {
+		t.Skipf("Converted test image not found: %s", convertedPath)
+	}
+
+	// Use same ground truth as MPO version
+	gt := loadGroundTruth(t, "IMG_2820.JPG")
+	t.Logf("Testing converted JPEG: %s", convertedFilename)
+	t.Logf("Using ground truth from: IMG_2820.JPG (MPO)")
+
+	// Test with :latest image
+	config := &ClientConfig{
+		IndexPath:   indexPath,
+		DockerImage: "diarmuidk/astrometry-dockerised-solver:latest",
+		Timeout:     3 * time.Minute,
+	}
+
+	client, err := NewClient(config)
+	if err != nil {
+		t.Fatalf("Failed to create client: %v", err)
+	}
+
+	// Configure solve options - use reasonable scale range
+	opts := DefaultSolveOptions()
+	opts.ScaleLow = 1.0
+	opts.ScaleHigh = 180.0
+	opts.ScaleUnits = "degwidth"
+	opts.DownsampleFactor = 2
+
+	// Solve
+	ctx := context.Background()
+	result, err := client.Solve(ctx, convertedPath, opts)
+	if err != nil {
+		t.Fatalf("Solve failed: %v", err)
+	}
+
+	// Validate against same ground truth as MPO
+	validateResult(t, result, gt)
+
+	t.Logf("Converted JPEG produces results within tolerance of MPO ground truth")
 }
