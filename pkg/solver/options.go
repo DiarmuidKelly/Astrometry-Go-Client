@@ -6,15 +6,15 @@ import "time"
 
 const (
 	// DefaultDockerImage is the default Docker image used for plate-solving
-	// Compatible images: "dm90/astrometry", "ghcr.io/diarmuidkelly/astrometry-dockerised-solver"
-	DefaultDockerImage = "ghcr.io/diarmuidkelly/astrometry-dockerised-solver"
+	// Compatible images: "dm90/astrometry", "diarmuidk/astrometry-dockerised-solver", "ghcr.io/diarmuidkelly/astrometry-dockerised-solver"
+	DefaultDockerImage = "diarmuidk/astrometry-dockerised-solver"
 )
 
 // ClientConfig holds configuration for the Astrometry client.
 type ClientConfig struct {
 	// DockerImage specifies the Docker image to use for solving.
-	// Compatible with dm90/astrometry or ghcr.io/diarmuidkelly/astrometry-dockerised-solver
-	// Default: "ghcr.io/diarmuidkelly/astrometry-dockerised-solver"
+	// Compatible with dm90/astrometry, diarmuidk/astrometry-dockerised-solver, or ghcr.io/diarmuidkelly/astrometry-dockerised-solver
+	// Default: "diarmuidk/astrometry-dockerised-solver"
 	DockerImage string
 
 	// IndexPath is the host path to the astrometry index files.

@@ -68,6 +68,42 @@ jobs:
         with:
           version: v2.7.2
 
+  integration:
+    name: Integration Tests
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Go
+        uses: actions/setup-go@v5
+        with:
+          go-version: '1.23'
+
+      - name: Download dependencies
+        run: go mod download
+
+      - name: Pull Docker images
+        run: |
+          docker pull diarmuidk/astrometry-dockerised-solver:latest
+          docker pull ghcr.io/diarmuidkelly/astrometry-dockerised-solver:latest
+          docker pull dm90/astrometry:latest
+
+      - name: Download sample astrometry indexes
+        run: |
+          mkdir -p astrometry-data
+          cd astrometry-data
+          # Download a few small indexes for testing (covering common FOV ranges)
+          wget -q http://data.astrometry.net/4100/index-4110.fits
+          wget -q http://data.astrometry.net/4100/index-4111.fits
+          cd ..
+
+      - name: Run integration tests
+        env:
+          ASTROMETRY_INDEX_PATH: ${{ github.workspace }}/astrometry-data
+        run: go test -v -tags=integration -timeout 10m ./pkg/solver/...
+
   build:
     name: Build
     runs-on: ubuntu-latest

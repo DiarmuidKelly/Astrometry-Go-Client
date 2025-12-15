@@ -10,8 +10,8 @@ import (
 func TestDefaultClientConfig(t *testing.T) {
 	config := DefaultClientConfig()
 
-	if config.DockerImage != "dm90/astrometry" {
-		t.Errorf("expected DockerImage to be 'dm90/astrometry', got '%s'", config.DockerImage)
+	if config.DockerImage != "diarmuidk/astrometry-dockerised-solver" {
+		t.Errorf("expected DockerImage to be 'diarmuidk/astrometry-dockerised-solver', got '%s'", config.DockerImage)
 	}
 
 	if config.Timeout.Minutes() != 5 {
@@ -37,7 +37,7 @@ func TestDefaultSolveOptions(t *testing.T) {
 
 func TestNewClient_MissingIndexPath(t *testing.T) {
 	config := &ClientConfig{
-		DockerImage: "dm90/astrometry",
+		DockerImage: "diarmuidk/astrometry-dockerised-solver",
 	}
 
 	_, err := NewClient(config)
@@ -83,7 +83,7 @@ func TestNewClient_Success(t *testing.T) {
 	}
 
 	// Check defaults were set
-	if client.config.DockerImage != "dm90/astrometry" {
+	if client.config.DockerImage != "diarmuidk/astrometry-dockerised-solver" {
 		t.Errorf("expected DockerImage to be set to default")
 	}
 
