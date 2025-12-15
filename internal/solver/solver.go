@@ -166,7 +166,7 @@ func (c *Client) Solve(ctx context.Context, imagePath string, opts *SolveOptions
 	// Execute Docker command
 	startTime := time.Now()
 	cmd := exec.CommandContext(solveCtx, "docker", dockerArgs...)
-	output, err := cmd.CombinedOutput()
+	output, _ := cmd.CombinedOutput() //nolint:errcheck // Ignore exit code - we check for .wcs file existence instead
 	rawOutput := string(output)
 
 	if solveCtx.Err() == context.DeadlineExceeded {
