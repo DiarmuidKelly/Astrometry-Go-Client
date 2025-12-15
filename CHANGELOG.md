@@ -19,6 +19,33 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.3.1] - 2025-12-15
+
+### Changed
+
+- **Reorganized package structure with clean separation of concerns**
+  - Introduced `client` package as the main public API
+  - Moved core solving implementation to `internal/solver/` (internal use only)
+  - Created type re-exports in root `solver.go` for backwards compatibility
+  - Separated public configuration into `config.go`
+  - Public import paths: `github.com/DiarmuidKelly/astrometry-go-client/client` (main API), `github.com/DiarmuidKelly/astrometry-go-client/fov` (utilities)
+
+- **Introduced unified `client.Client` wrapper**
+  - Wraps internal solver implementation with clean public interface
+  - Provides foundation for future expansion (e.g., annotation support, additional astrometry tools)
+  - Methods: `NewClient()`, `Solve()`, `SolveBytes()`
+
+- **Enhanced package architecture documentation**
+  - Added "Current Implementation Status" section documenting completed refactor
+  - Clearly separates current state from planned features (desired state)
+  - Documents import paths, implemented features, and future additions
+
+### Technical Details
+
+- Internal package prevents direct access to implementation details
+- Type re-exports maintain simple API surface while enabling future extensibility
+- Structure prepares codebase for additional astrometry.net tools (image2xy, wcs utilities, etc.)
+
 ## [1.2.1] - 2025-12-15
 
 ### Fixed
@@ -98,5 +125,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 [1.2.1]: https://github.com/DiarmuidKelly/astrometry-go-client/compare/v1.2.0...v1.2.1
 [1.2.0]: https://github.com/DiarmuidKelly/astrometry-go-client/compare/v1.1.0...v1.2.0
 [1.1.0]: https://github.com/DiarmuidKelly/astrometry-go-client/compare/v1.0.0...v1.1.0
-[1.0.0]: https://github.com/DiarmuidKelly/astrometry-go-client/compare/v0.1.0...v1.0.0
+[1.0.0]: https://github.com/DiarmuidKelly/astrometry-go-client/compare/v0.3.1...v1.0.0
+[0.3.1]: https://github.com/DiarmuidKelly/astrometry-go-client/compare/v0.1.0...v0.3.1
 [0.1.0]: https://github.com/DiarmuidKelly/astrometry-go-client/releases/tag/v0.1.0

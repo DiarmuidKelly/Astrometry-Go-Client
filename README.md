@@ -183,12 +183,12 @@ docker pull ghcr.io/diarmuidkelly/astrometry-dockerised-solver:latest
 **Client configuration**:
 
 ```go
-config := &solver.ClientConfig{
+config := &client.ClientConfig{
     IndexPath: "/path/to/astrometry-data",  // Path to your index files
     // DockerImage defaults to ghcr.io/diarmuidkelly/astrometry-dockerised-solver:latest
     // To use dm90/astrometry instead: DockerImage: "dm90/astrometry"
 }
-client, err := solver.NewClient(config)
+c, err := client.NewClient(config)
 ```
 
 #### 2. Docker Exec Mode (Recommended for Development)
@@ -238,12 +238,12 @@ docker pull dm90/astrometry:latest
 **Client configuration**:
 
 ```go
-config := &solver.ClientConfig{
+config := &client.ClientConfig{
     IndexPath:     "/path/to/astrometry-data",
     UseDockerExec: true,
     ContainerName: "astrometry-solver",
 }
-client, err := solver.NewClient(config)
+c, err := client.NewClient(config)
 ```
 
 ### Performance Comparison
@@ -299,26 +299,26 @@ import (
     "fmt"
     "log"
 
-    solver "github.com/DiarmuidKelly/astrometry-go-client"
+    "github.com/DiarmuidKelly/astrometry-go-client"
 )
 
 func main() {
     // Create client
-    config := &solver.ClientConfig{
+    config := &client.ClientConfig{
         IndexPath: "/path/to/astrometry-data",
     }
-    client, err := solver.NewClient(config)
+    c, err := client.NewClient(config)
     if err != nil {
         log.Fatal(err)
     }
 
     // Configure solve options
-    opts := solver.DefaultSolveOptions()
+    opts := client.DefaultSolveOptions()
     opts.ScaleLow = 1.0   // 1 arcmin/width
     opts.ScaleHigh = 3.0  // 3 arcmin/width
 
     // Solve the image
-    result, err := client.Solve(context.Background(), "image.jpg", opts)
+    result, err := c.Solve(context.Background(), "image.jpg", opts)
     if err != nil {
         log.Fatal(err)
     }
@@ -448,11 +448,11 @@ var (
 Example:
 
 ```go
-result, err := client.Solve(ctx, imagePath, opts)
+result, err := c.Solve(ctx, imagePath, opts)
 if err != nil {
-    if errors.Is(err, solver.ErrTimeout) {
+    if errors.Is(err, client.ErrTimeout) {
         log.Println("Solve timed out - try increasing timeout or downsample")
-    } else if errors.Is(err, solver.ErrDockerFailed) {
+    } else if errors.Is(err, client.ErrDockerFailed) {
         log.Println("Docker error - check Docker is running")
     }
     return err
